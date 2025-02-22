@@ -120,8 +120,12 @@ fun SmsCodeScreen(
             onClick = {
                 if (isAllFilled) {
                     // Здесь можно вызвать API для проверки кода из СМС
-                    Toast.makeText(context, "Код принят", Toast.LENGTH_SHORT).show()
-                    onValidationSuccess()
+                    if (codes.toList().joinToString() == "123456"){
+                        Toast.makeText(context, "Код принят", Toast.LENGTH_SHORT).show()
+                        onValidationSuccess()
+                    }else{
+                        Toast.makeText(context, "Не правильно набран код", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     Toast.makeText(context, "Проверьте введённый код", Toast.LENGTH_SHORT).show()
                 }
@@ -134,9 +138,5 @@ fun SmsCodeScreen(
     }
 }
 
-fun validateSmsCode(code: String): Boolean {
-    // Код должен состоять ровно из 6 цифр
-    return code.length == 6 && code.all { it.isDigit() }
-}
 
 
