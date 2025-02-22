@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import land.sendy.pfe_sdk.api.API
 
@@ -33,13 +35,26 @@ fun AppNavigation() {
 
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
-            SplashScreen(onTimeout = { navController.navigate("login") })
+            SplashScreen {
+                navController.navigate("login")
+            }
         }
         composable("login") {
-            LoginScreen(onRegistrationSuccess = { navController.navigate("sms") })
+            LoginScreen { phoneNumber ->
+                // Переходим на экран SMS, передав номер телефона
+                navController.navigate("sms/$phoneNumber")
+            }
         }
-        composable("sms") {
-            SmsCodeScreen(onValidationSuccess = { navController.navigate("home") })
+        // Маршрут для SMS: передаем номер телефона
+        composable(
+            route = "sms/{phoneNumber}",
+            arguments = listOf(navArgument("phoneNumber") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val phoneNumber = backStackEntry.arguments?.getString("phoneNumber") ?: ""
+            SmsCodeScreen(
+                phoneNumber = phoneNumber,
+                onValidationSuccess = { navController.navigate("home") }
+            )
         }
         composable("home") {
             HomeScreen()
